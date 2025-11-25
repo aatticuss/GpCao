@@ -10,31 +10,31 @@ Route::get('/register', function () {
     return view('auth.register');
 })->name('register.form');
 
-Route::prefix('perfil')->group(function () {
+Route::prefix('profile')->group(function () {
     Route::get('/', function () {
         return view('user.profile');
     })->name('user.profile');
 
-    Route::get('/editar', function () {
+    Route::get('/edit', function () {
         return view('user.edit');
     })->name('user.profile.edit');
 });
 
 // Exercícios
-Route::prefix('exercicios')->group(function () {
+Route::prefix('exercises')->group(function () {
     Route::get('/', function () {
         return view('exercises.list');
     })->name('exercicios.index');
 
-    Route::get('/criar', function () {
+    Route::get('/create', function () {
         return view('exercises.create');
-    })->name('exercicios.criar');
+    })->name('exercicios.store');
 
     Route::get('/{id}', function ($id) {
         return view('exercises.show', ['exerciseId' => $id]);
-    })->name('exercicios.mostrar');
+    })->name('exercicios.show');
 
-    Route::get('/{id}/responder', function ($id) {
+    Route::get('/{id}/answer', function ($id) {
         return view('exercicios.show', ['exerciseId' => $id]);
     })->name('exercicios.responder');
 });

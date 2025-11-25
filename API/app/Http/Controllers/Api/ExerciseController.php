@@ -26,10 +26,12 @@ class ExerciseController extends Controller {
     }
 
     // lista todos os exercícios do usuário (select)
-    public function listar(Request $request)
+    public function index(Request $request)
     {
         $user = $request->user();
-        $exercicios = Exercise::where('usuario_id', $user->id)->get();
+        $exercicios = Exercise::where('usuario_id', $user->id)
+            ->with('technology')
+            ->get();
 
         return response()->json([
             'exercicios' => $exercicios
@@ -37,7 +39,7 @@ class ExerciseController extends Controller {
     }
     
     // crud do exercício (insert)
-    public function armazenar(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
             'dificuldade' => 'required|in:facil,medio,dificil',
@@ -72,7 +74,7 @@ class ExerciseController extends Controller {
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json'
             ])->post('https://api.cohere.ai/v1/chat', [
-                'model' => 'command-r-plus',
+                'model' => 'command-xlarge-nightly',
                 'temperature' => 0.8,
                 'max_tokens' => 600,
                 'message' => $promptGeracao
@@ -99,7 +101,7 @@ class ExerciseController extends Controller {
         }
 
 
-        Exercise::create([
+        $exercicio = Exercise::create([
             'titulo' => $request->titulo,
             'descricao' => $request->descricao,
             'conteudo_exercicio' => $generatedPromptContent,
@@ -114,39 +116,56 @@ class ExerciseController extends Controller {
         ], 201);        
     }
 
-    // mostra um exericio específico (select)
-    public function mostrar(Request $request, Exercise $exercicio) 
+    public function show(Request $request, Exercise $exercicio) 
     {
         $user = $request->user();
+
+        $exercicio->load('technology');
 
         $userAnswer = Answer::where('usuario_id', $user->id)
             ->where('exercicio_id', $exercicio->id)
             ->latest()
             ->first();
-        
+
         return response()->json([
-            'exercicio' => $exercicio,
-            'ultima_resposta' => $userAnswer
-        ]);    
+            'exercicio' => [
+                'id' => $exercicio->id,
+                'titulo' => $exercicio->titulo,
+                'descricao' => $exercicio->descricao,
+                'conteudo_exercicio' => $exercicio->conteudo_exercicio,
+                'dificuldade' => $exercicio->dificuldade,
+                'technology' => $exercicio->technology ? [
+                    'id' => $exercicio->technology->id,
+                    'nome' => $exercicio->technology->nome
+                ] : null,
+            ],
+            'user_answer' => $userAnswer ? [
+                'id' => $userAnswer->id,
+                'texto_resposta' => $userAnswer->texto_resposta,
+                'nota' => $userAnswer->nota,
+                'avaliacao' => $userAnswer->avaliacao
+            ] : null
+        ]);
     }
     
-    // valida a resposta do usuario
-    public function responder(Request $request, Exercise $exercicio)
+    public function answer(Request $request, Exercise $exercicio)
     {
+        
         $request->validate([
             'texto_resposta' => 'required|string|max:1000',
         ]);
 
         $user = $request->user();
+        if (!$user) {
+            return response()->json(['error' => 'Usuário não autenticado'], 401);
+        }
 
         $respostaUsuario = trim($request->texto_resposta);
 
-
-       $promptAvaliacao = "Avalie a seguinte resposta do usuário: '{$respostaUsuario}'. "
+        $promptAvaliacao = "Avalie a seguinte resposta do usuário: '{$respostaUsuario}'. "
             . "Forneça uma nota de 0 a 10 e uma avaliação detalhada.";
 
         $chaveAPI = env('COHERE_API_KEY');
-    
         if (empty($chaveAPI)) {
             return response()->json(['error' => 'Chave da API não configurada'], 500);
         }
@@ -157,7 +176,7 @@ class ExerciseController extends Controller {
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json'
             ])->post('https://api.cohere.ai/v1/chat', [
-                'model' => 'command-r-plus',
+                'model' => 'command-xlarge-nightly',
                 'temperature' => 0.5,
                 'max_tokens' => 300,
                 'message' => $promptAvaliacao
@@ -173,7 +192,7 @@ class ExerciseController extends Controller {
             $avaliacaoAPI = $response->json()['text'] ?? null;
 
             $nota = null;
-            if (preg_match('/Nota:\s*(\d+)/i', $avaliacaoAPI, $match)) {
+            if ($avaliacaoAPI && preg_match('/Nota:\s*(\d+)/i', $avaliacaoAPI, $match)) {
                 $nota = (int)$match[1];
             }
 
@@ -181,7 +200,7 @@ class ExerciseController extends Controller {
             return response()->json([
                 'error' => 'Erro ao conectar com API externa',
                 'detalhes' => $e->getMessage()
-            ], 500);        
+            ], 500);
         }
 
         $respostaCriada = Answer::create([
@@ -194,7 +213,13 @@ class ExerciseController extends Controller {
 
         return response()->json([
             'message' => 'Resposta enviada e avaliada com sucesso',
-            'resposta' => $respostaCriada
-        ], 201);        
-    }    
+            'resposta' => [
+                'id' => $respostaCriada->id,
+                'texto_resposta' => $respostaCriada->texto_resposta,
+                'nota' => $respostaCriada->nota,
+                'avaliacao' => $respostaCriada->avaliacao
+            ]
+        ], 201);
+    }
+    
 }

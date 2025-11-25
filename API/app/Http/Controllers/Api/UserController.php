@@ -11,10 +11,9 @@ use App\Http\Controllers\Api\Controller;
 
 class UserController extends Controller
 {
-    // retorna o perfil com os 4 ultimos exercícios do usuário
     public function profile(Request $request)
     {
-        $user = request->user();
+        $user = $request->user();
 
         $exercises = $user->exercises()
             ->with('technology')
@@ -23,7 +22,7 @@ class UserController extends Controller
             ->get();
 
         $technologies = Technology::all();
-        $userTech = $user->technologies->get();
+        $userTech = $user->technologies;
 
          return response()->json([
             'user' => $user,
@@ -33,17 +32,15 @@ class UserController extends Controller
         ]);
     }
 
-    // retorna a view de editar perfil
     public function formEditarPerfil()
     {
-    $user = Auth::user();
-    return view('editar', compact('user'));
+        $user = Auth::user();
+        return view('editar', compact('user'));
     }
 
-    // valida a edicao de perfil
     public function updateProfile(Request $request)
     {
-        $user = request->user();
+        $user = $request->user();
 
         $validated = $request->validate([
             'nome' => 'required|string|max:255',
@@ -55,12 +52,10 @@ class UserController extends Controller
         $user->biografia = $validated['biografia'];
 
         if ($request->hasFile('foto_perfil')) {
-            // remove antiga se existir
             if ($user->foto_perfil && Storage::disk('public')->exists($user->foto_perfil)) {
                 Storage::disk('public')->delete($user->foto_perfil);
             }
 
-            // salva nova
             $path = $request->file('foto_perfil')->store('fotos_perfil', 'public');
             $user->foto_perfil = $path;
         }

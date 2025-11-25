@@ -9,22 +9,22 @@ use App\Http\Controllers\Api\Controller;
 
 class TechnologyController extends Controller
 {
-    public function updateTechnologies(Request $request)
+     public function sync(Request $request)
     {
-        $validated = $request->validate([
-            'technologies' => 'array',
-            'technologies.*' => 'integer|exists:technologies,id'
+        $request->validate([
+            'technologies' => 'required|array',
+            'technologies.*' => 'integer|exists:technologies,id',
         ]);
 
-        // usuário autenticado (via token)
         $user = $request->user();
 
-        // sincroniza as tecnologias do usuáro com as selecionadas no formulário
-        $user->technologies()->sync($validated['technologies'] ?? []);
+        $user->technologies()->sync($request->technologies);
+
+        $userTech = $user->technologies()->get();
 
         return response()->json([
-            'message' => 'Tecnologias atualizadas com sucesso.',
-            'technologies' => $user->technologies()->get(),
+            'message' => 'Tecnologias atualizadas com sucesso!',
+            'user_technologies' => $userTech
         ], 200);
     }
 }

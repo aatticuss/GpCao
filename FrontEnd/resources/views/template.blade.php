@@ -62,7 +62,7 @@
                     <nav class="flex-grow">
                         <ul class="space-y-1">
                             <li>
-                                <a href="/perfil" class="sidebar-link flex items-center p-3 rounded-lg text-sm text-sidebar-text hover:bg-sidebar-hover-bg hover:text-white">
+                                <a href="/profile" class="sidebar-link flex items-center p-3 rounded-lg text-sm text-sidebar-text hover:bg-sidebar-hover-bg hover:text-white">
                                     <svg class="w-5 h-5 mr-4 icon-fill-current" viewBox="0 0 24 24">
                                         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                                     </svg>
@@ -70,7 +70,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="/exercicios" class="sidebar-link flex items-center p-3 rounded-lg text-sm text-sidebar-text hover:bg-sidebar-hover-bg hover:text-white">
+                                <a href="/exercises" class="sidebar-link flex items-center p-3 rounded-lg text-sm text-sidebar-text hover:bg-sidebar-hover-bg hover:text-white">
                                     <svg class="w-5 h-5 mr-4 icon-fill-current" viewBox="0 0 24 24">
                                         <path d="M13 14h-2V9h2v5zm-2 2h2v2h-2zm-1-9H8V5h2zm-2 2H6v2h2zm-2 2H4v2h2zm10 0h2v2h-2zm-2 2h2v2h-2zm2 0h2v2h-2zm-2 2h2v2h-2zm-2 0h2v2h-2zm-2 2h2v2h-2zM4 22h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2zm0-18h16v16H4V4z"/>
                                     </svg>

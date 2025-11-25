@@ -13,7 +13,7 @@ return array(
     'App\\Exceptions\\HandleExceptions' => $vendorDir . '/laravel/pint/app/Exceptions/HandleExceptions.php',
     'App\\Factories\\ConfigurationFactory' => $vendorDir . '/laravel/pint/app/Factories/ConfigurationFactory.php',
     'App\\Factories\\ConfigurationResolverFactory' => $vendorDir . '/laravel/pint/app/Factories/ConfigurationResolverFactory.php',
-    'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Api/Controller.php',
+    'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
     'App\\Http\\Middleware\\AuthApiToken' => $baseDir . '/app/Http/Middleware/AuthApiToken.php',
     'App\\Kernel' => $vendorDir . '/laravel/pint/app/Kernel.php',
     'App\\Output\\Concerns\\InteractsWithSymbols' => $vendorDir . '/laravel/pint/app/Output/Concerns/InteractsWithSymbols.php',

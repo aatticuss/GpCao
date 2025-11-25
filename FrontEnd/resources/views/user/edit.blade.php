@@ -35,7 +35,7 @@
 async function loadProfile() {
     const token = localStorage.getItem('token');
     try {
-        const response = await fetch('http://127.0.0.1:8000/user/profile', {
+        const response = await fetch('http://127.0.0.1:8000/api/user/profile', {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
         });
@@ -56,7 +56,7 @@ document.getElementById('editProfileForm').addEventListener('submit', async func
     const messageEl = document.getElementById('message');
 
     try {
-        const response = await fetch('http://127.0.0.1:8000/user/profile', {
+        const response = await fetch('http://127.0.0.1:8000/api/user/profile', {
             method: 'PUT',
             headers: { 'Authorization': `Bearer ${token}` },
             body: formData

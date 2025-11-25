@@ -29,7 +29,9 @@
 
             <div class="mb-6">
                 <label for="tecnologia_id" class="block text-sm font-medium text-gray-700">Tecnologia</label>
-                <select id="tecnologia_id" name="tecnologia_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></select>
+                <select id="tecnologia_id" name="tecnologia_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    <option value="" disabled selected>Carregando...</option>
+                </select>
             </div>
 
             <div class="flex items-center justify-end">
@@ -45,12 +47,18 @@ async function loadTechnologies() {
     const select = document.getElementById('tecnologia_id');
 
     try {
-        const response = await fetch('http://127.0.0.1:8000/user/profile', {
-            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+        const response = await fetch('http://127.0.0.1:8000/api/user/profile', {
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+            }
         });
-        const user = await response.json();
-        if (response.ok && user.technologies) {
-            user.technologies.forEach(tech => {
+
+        const data = await response.json();
+
+        if (response.ok && data.user_technologies && data.user_technologies.length > 0) {
+            select.innerHTML = '';
+            data.user_technologies.forEach(tech => {
                 const option = document.createElement('option');
                 option.value = tech.id;
                 option.textContent = tech.nome;
@@ -67,6 +75,7 @@ async function loadTechnologies() {
 document.getElementById('exerciseForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const token = localStorage.getItem('token');
+
     const data = {
         titulo: document.getElementById('titulo').value,
         descricao: document.getElementById('descricao').value,
@@ -77,11 +86,16 @@ document.getElementById('exerciseForm').addEventListener('submit', async functio
     const messageEl = document.getElementById('message');
 
     try {
-        const response = await fetch('http://127.0.0.1:8000/exercises', {
+        const response = await fetch('http://127.0.0.1:8000/api/exercises', {
             method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
             body: JSON.stringify(data)
         });
+
         const result = await response.json();
 
         if (response.ok) {
